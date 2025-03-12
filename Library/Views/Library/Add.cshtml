@@ -1,0 +1,52 @@
+﻿@model BookAddModel
+@{
+    var genreList = ViewBag.GenreList as List<GenreBaseModel>;
+    ViewData["Title"] = "Add new book";
+}
+
+
+<form class="mt-4 px-5" method="post" asp-controller="Library" asp-action="AddSave">
+    <div class="mb-3">
+
+        <label for="userName" class="form-label">Titolo</label>
+        <input type="text" class="form-control" placeholder="Inserisci il titolo" required="" autocomplete="on" asp-for="Title">
+    </div>
+
+    <div class="mb-3">
+        <label for="surName" class="form-label">Autore</label>
+        <input type="text" class="form-control" placeholder="Inserisci l'autore" required="" autocomplete="on" asp-for="Author">
+    </div>
+
+    @* <div class="mb-3"> *@
+    @*     <label for="surName" class="form-label">Genere</label> *@
+    @*     <input type="text" class="form-control" placeholder="Inserisci il genere" required="" autocomplete="on" asp-for="IdGenre"> *@
+    @* </div> *@
+
+    <div>
+        <label for="surName" class="form-label">Genere</label>
+        <select asp-for="IdGenre" class="form-control" required>
+            <option selected disabled> Seleziona un genere</option>
+                @if(genreList != null)
+                {
+                    foreach (var item in genreList)
+                    {
+                        <option value=@item.Id >@item.Name</option>
+                    }
+                }
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label for="surName" class="form-label">Immagine copertina</label>
+        <input type="text" class="form-control" placeholder="Inserisci l'URL dell'immagine" required="" autocomplete="on" asp-for="Img">
+    </div>
+
+    <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" checked asp-for="Available">
+        <label class="form-check-label" for="Available">
+           Disponibile
+        </label>
+    </div>
+
+    <button type="submit" class="btn btn-dark">Aggiungi</button>
+</form>
