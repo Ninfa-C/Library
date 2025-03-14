@@ -16,7 +16,7 @@ namespace Library.ViewModels
         public int IdGenre { get; set; }
 
         [Required(ErrorMessage = "Immagine copertina obbligatoria")]
-        public required string Img { get; set; }
+        public required IFormFile? File { get; set; }
 
         public bool Available { get; set; }
     }

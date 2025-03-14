@@ -1,7 +1,9 @@
 ﻿using Library.Data;
+using Library.Models;
 using Library.Services;
 using Library.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 namespace Library.Controllers
 {
@@ -98,6 +100,63 @@ namespace Library.Controllers
             return RedirectToAction("Index");
         }
 
+        public async Task<IActionResult> Prenota()
+        {
+            var libriTrovati = await _libraryServices.GetAllAvaibleBooks();
+            ViewBag.LibriTrovati = libriTrovati;
+            var viewModel = new LoanViewModel
+            {
+                SelectedBooks = new List<Guid>() // Inizializza la lista dei libri selezionati
+            };
+            return View(viewModel);
+        }
 
+        // Azione per confermare la prenotazione
+        [HttpPost]
+        public async Task<IActionResult> Prenota(LoanViewModel prenotazione)
+        {
+            if (ModelState.IsValid)
+            {
+                await _libraryServices.MakeALoan(prenotazione.Name, prenotazione.Surname, prenotazione.Email, prenotazione.SelectedBooks);
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                {
+                    var errors = ModelState.Values.SelectMany(v => v.Errors);
+                    foreach (var error in errors)
+                    {
+                        Console.WriteLine(error.ErrorMessage); // O usa un logger
+                    }
+                    return View(prenotazione);
+                }
+            }
+        }
+
+        public async Task<IActionResult> CancelLoan(Guid loanId)
+        {
+            try
+            {
+                bool success = await _libraryServices.CancelLoan(loanId);
+                if (success)
+                    return RedirectToAction("Prenotazioni");
+
+                return BadRequest(new { message = "Impossibile annullare la prenotazione." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
+
+
+
+        public async Task<IActionResult> Prenotazioni()
+        {
+            var prenotazioni = await _libraryServices.GetLoans();
+            return View(prenotazioni);
+        }
     }
+
 }
+

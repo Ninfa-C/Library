@@ -5,7 +5,7 @@
 }
 
 
-<form class="mt-4 px-5" method="post" asp-controller="Library" asp-action="AddSave">
+<form class="mt-4 px-5" method="post" asp-controller="Library" asp-action="AddSave" enctype="multipart/form-data">
     <div class="mb-3">
 
         <label for="userName" class="form-label">Titolo</label>
@@ -38,7 +38,7 @@
 
     <div class="mb-3">
         <label for="surName" class="form-label">Immagine copertina</label>
-        <input type="text" class="form-control" placeholder="Inserisci l'URL dell'immagine" required="" autocomplete="on" asp-for="Img">
+        <input type="file" class="form-control" placeholder="Inserisci l'URL dell'immagine" required="" autocomplete="on" asp-for="File">
     </div>
 
     <div class="form-check mb-3">

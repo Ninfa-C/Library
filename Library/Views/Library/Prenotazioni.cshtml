@@ -1,0 +1,48 @@
+﻿@model List<Loan>
+@{
+	ViewData["Title"] = "Gestisci le tue prenotazioni";
+ }
+
+<h2>Lista Prestiti</h2>
+@if (Model == null || !Model.Any())
+{
+    <p class="text-danger">Nessun prestito trovato.</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Utente</th>
+                <th>Data Prestito</th>
+                <th>Libri</th>
+                <th>Cancella</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var loan in Model)
+            {
+                <tr>
+                    <td>@loan.User?.Name @loan.User?.Surname</td>
+                    <td>@loan.LoanDate.ToString("dd/MM/yyyy")</td>
+                    <td>
+                        <ul>
+                            @if (loan.LoanBooks != null)
+                            {
+                                @foreach (var loanBook in loan.LoanBooks)
+                                {
+                                    <li>@loanBook?.Book?.Title</li>
+                                }
+                            }
+                            else
+                            {
+                                <li class="text-muted">Nessun libro</li>
+                            }
+                        </ul>
+                    </td>
+                    <td><a asp-controller="Library" asp-action="CancelLoan" asp-route-loanId=@loan.Id ><i class="bi bi-trash"></i></a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

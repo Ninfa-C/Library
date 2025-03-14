@@ -1,0 +1,109 @@
+﻿@model LoanViewModel
+
+@{
+    var bookList = ViewBag.LibriTrovati as BookListViewModel;
+    ViewData["Title"] = "Prenota il tuo libro!";
+}
+<h2>Prenotazione di un libro</h2>
+
+<!-- Form per inserire i dati dell'utente -->
+<form method="post" asp-controller="Library" asp-action="Prenota">
+    <div class="form-group">
+        <label asp-for="Name" for="nome">Nome</label>
+        <input asp-for="Name" type="text" id="nome" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label asp-for="Surname" for="cognome">Cognome</label>
+        <input asp-for="Surname" type="text" id="cognome" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label asp-for="Email" for="email">Email</label>
+        <input asp-for="Email" type="email" id="email" class="form-control" required />
+    </div>
+
+    <div id="hiddenFieldsContainer"></div>
+
+    <button type="submit" class="btn btn-primary">Prenota</button>
+</form>
+
+<hr />
+
+<!-- Lista dei libri disponibili -->
+<h3>Libri Disponibili</h3>
+<div class="list-group">
+    @if (bookList.Books != null)
+    {
+        foreach (var item in bookList.Books)
+        {
+            if (item != null)
+            {
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>@item.Title</span>
+                    <button type="button" class="btn btn-success" onclick="aggiungiLibro('@item.Id', '@System.Net.WebUtility.HtmlEncode(item.Title)')">Aggiungi</button>
+                </div>
+            }
+        }
+    }
+    else
+    {
+        <p>Nessun libro disponibile.</p>
+    }
+</div>
+
+<hr />
+
+<!-- Lista dei libri selezionati -->
+<h3>Libri Selezionati</h3>
+<div id="libriSelezionati">
+    <!-- I libri selezionati verranno aggiunti qui dinamicamente -->
+</div>
+
+
+
+<script>
+        function escapeHtml(text) {
+        return text.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+    }
+
+      function aggiungiLibro(idLibro, titoloLibro) {
+        console.log("Tentativo di aggiunta libro:", idLibro, titoloLibro);
+
+        const libroEsistente = document.querySelector(`#libriSelezionati [data-id="${idLibro}"]`);
+        if (libroEsistente) {
+            alert('Il libro è già stato aggiunto!');
+            return;
+        }
+
+        const libroDiv = document.createElement('div');
+        libroDiv.className = 'card mb-2';
+        libroDiv.setAttribute('data-id', idLibro);
+        libroDiv.innerHTML = `
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <span>${escapeHtml(titoloLibro)}</span>
+                <button type="button" class="btn btn-danger" onclick="rimuoviLibro('${idLibro}')">Rimuovi</button>
+            </div>
+        `;
+
+        document.getElementById('libriSelezionati').appendChild(libroDiv);
+
+        const hiddenField = document.createElement('input');
+        hiddenField.type = 'hidden';
+        hiddenField.name = 'SelectedBooks';
+        hiddenField.value = idLibro;
+        document.getElementById('hiddenFieldsContainer').appendChild(hiddenField);
+    }
+
+
+    function rimuoviLibro(idLibro) {
+        const libroDaRimuovere = document.querySelector(`#libriSelezionati [data-id="${idLibro}"]`);
+        if (libroDaRimuovere) {
+            libroDaRimuovere.remove();
+        }
+        const hiddenFields = document.querySelectorAll('#hiddenFieldsContainer input[type="hidden"]');
+        hiddenFields.forEach(field => {
+            if (field.value === idLibro) {
+                field.remove();
+            }
+        });
+    }
+</script>
